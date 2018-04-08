@@ -24,11 +24,16 @@ var displayPost = function (arr) {
   for (var i = 0; i < arr.length; i++) {
     $postSection.append('<p>' + removeButton + ' ' + arr[i].text + ' id: ' + arr[i].id + '</p>');
     $postSection.find('p:last').addClass('post').attr('data-id', arr[i].id);
-    $postSection.find('p:last button').attr('type', 'button').addClass('remove btn btn-danger').on('click', function () {
-      $(this).closest('p').remove();
-    });
+    $postSection.find('p:last button').attr('type', 'button').addClass('remove btn btn-danger');
+    // .on('click', function () {
+    //   $(this).closest('p').remove();
+    // });
   }
 };
+
+$postSection.on('click', 'button.remove', function () {
+  $(this).closest('p').remove();
+});
 
 
 
