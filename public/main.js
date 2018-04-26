@@ -1,54 +1,51 @@
-var SpacebookApp = function () {
+var STORAGE_ID = 'spacebook';
+var SpacebookApp = function() {
   // dummy data
-  var posts = [
-    {
-      text: "Hello world 1", comments: [
-        { text: "Man, this is a comment 1!" },
-        { text: "Man, this is a comment 2!" },
-        { text: "Man, this is a comment 3!" }
-      ]
-    },
-    {
-      text: "Hello world 2", comments: [
-        { text: "Man, this is a comment 1!" },
-        { text: "Man, this is a comment 2!" },
-        { text: "Man, this is a comment 3!" }
-      ]
-    },
-    {
-      text: "Hello world 3", comments: [
-        { text: "Man, this is a comment 1!" },
-        { text: "Man, this is a comment 2!" },
-        { text: "Man, this is a comment 3!" }
-      ]
-    }
-  ];
+  var posts = [];
+  // localStorage functions
+  var _saveToLocalStorage = function () {
+    localStorage.setItem(STORAGE_ID, JSON.stringify(posts));
+  };
 
+  var _getFromLocalStorage = function () {
+    return JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');
+  };
   // render posts to page
-  // this function empties the posts div, 
-  // then adds each post them from the posts array 
+  // this function empties the posts div,
+  // then adds each post them from the posts array
   // along with the appropriate HTML
-  var _renderPosts = function () {
+  var _renderPosts = function() {
     // variable for storing our posts div
     var $posts = $('.posts');
 
     $posts.empty();
+    // get posts from local storage
+    // posts = getFromLocalStorage();
 
     for (var i = 0; i < posts.length; i += 1) {
       var post = posts[i];
-      var commentsContainer = '<div class="comments-container">' + '<ul class=comments-list></ul>' +
+      var commentsContainer =
+        '<div class="comments-container">' +
+        '<ul class=comments-list></ul>' +
         '<input type="text" class="comment-name">' +
         '<button class="btn btn-sm btn-primary add-comment">Post Comment</button> </div>';
 
-      $posts.append('<li class="post">' +
-        '<a href="#" class="show-comments">Toggle Comments </a> ' +
-        post.text + '<button class="btn btn-danger btn-sm remove">Remove Post</button> ' + commentsContainer + '</li>');
+      $posts.append(
+        '<li class="post">' +
+          '<a href="#" class="show-comments">Toggle Comments </a> ' +
+          post.text +
+          '<button class="btn btn-danger btn-sm remove">Remove Post</button> ' +
+          commentsContainer +
+          '</li>'
+      );
     }
-  }
+  };
 
-  var _renderComments = function () {
+  var _renderComments = function() {
     //empty all the comments - from all posts!!!
     $('.comments-list').empty();
+    // get posts from local storage
+    // posts = getFromLocalStorage();
 
     for (var i = 0; i < posts.length; i += 1) {
       // the current post in the iteration
@@ -56,7 +53,9 @@ var SpacebookApp = function () {
 
       // finding the "post" element in the page that is "equal" to the
       // current post we're iterating on
-      var $post = $('.posts').find('.post').eq(i);
+      var $post = $('.posts')
+        .find('.post')
+        .eq(i);
 
       // iterate through each comment in our post's comments array
       for (var j = 0; j < post.comments.length; j += 1) {
@@ -64,44 +63,56 @@ var SpacebookApp = function () {
         var comment = post.comments[j];
 
         // append the comment to the post we wanted to comment on
-        $post.find('.comments-list').append(
-          '<li class="comment">' + comment.text +
-          '<button class="btn btn-danger btn-sm remove-comment">Remove Comment</button>' +
-          '</li>'
-        );
-      };
-    };
+        $post
+          .find('.comments-list')
+          .append(
+            '<li class="comment">' +
+              comment.text +
+              '<button class="btn btn-danger btn-sm remove-comment">Remove Comment</button>' +
+              '</li>'
+          );
+      }
+    }
   };
 
   // build a single post object and push it to array
-  var createPost = function (text) {
+  var createPost = function(text) {
     posts.push({ text: text, comments: [] });
+    // add posts aray to local storage
+    _saveToLocalStorage();
     _renderPosts();
     _renderComments();
   };
 
-  var removePost = function ($clickedPost, index) {
+  var removePost = function($clickedPost, index) {
     posts.splice(index, 1);
+    // add posts array to local storage
+    _saveToLocalStorage();
     $clickedPost.remove();
   };
 
-  var createComment = function (text, postIndex) {
+  var createComment = function(text, postIndex) {
     var comment = { text: text };
 
     // pushing the comment into the correct posts array
     posts[postIndex].comments.push(comment);
+    // add posts array to local storage
+    _saveToLocalStorage();
     //render comments
     _renderComments();
   };
 
-  var removeComment = function ($clickedComment, commentIndex, postIndex) {
+  var removeComment = function($clickedComment, commentIndex, postIndex) {
     // remove the comment from the comments array on the correct post object
     posts[postIndex].comments.splice(commentIndex, 1);
+    // add posts array to local storage
+    _saveToLocalStorage();
     // removing the comment from the page
     $clickedComment.remove();
   };
 
-  //  invoke the render method on app load
+  //  invoke the render method on app load anג get local storage
+  posts = _getFromLocalStorage();
   _renderPosts();
   _renderComments();
 
@@ -109,35 +120,37 @@ var SpacebookApp = function () {
     createPost: createPost,
     removePost: removePost,
     createComment: createComment,
-    removeComment: removeComment
+    removeComment: removeComment,
   };
 };
 
 var app = SpacebookApp();
 
-// Event Handlers below
-
-$('.add-post').on('click', function (e) {
+$('.add-post').on('click', function(e) {
   var text = $('#post-name').val();
   app.createPost(text);
 });
 
-$('.posts').on('click', '.remove', function () {
+$('.posts').on('click', '.remove', function() {
   var $clickedPost = $(this).closest('.post');
   var index = $clickedPost.index();
 
   app.removePost($clickedPost, index);
 });
 
-$('.posts').on('click', '.add-comment', function () {
-  var text = $(this).siblings('.comment-name').val();
+$('.posts').on('click', '.add-comment', function() {
+  var text = $(this)
+    .siblings('.comment-name')
+    .val();
   // finding the index of the post in the page... will use it in #createComment
-  var postIndex = $(this).closest('.post').index();
+  var postIndex = $(this)
+    .closest('.post')
+    .index();
 
   app.createComment(text, postIndex);
 });
 
-$('.posts').on('click', '.remove-comment', function () {
+$('.posts').on('click', '.remove-comment', function() {
   // the comment element that we're wanting to remove
   var $clickedComment = $(this).closest('.comment');
   // index of the comment element on the page
@@ -148,7 +161,7 @@ $('.posts').on('click', '.remove-comment', function () {
   app.removeComment($clickedComment, commentIndex, postIndex);
 });
 
-$('.posts').on('click', '.show-comments', function () {
+$('.posts').on('click', '.show-comments', function() {
   var $clickedPost = $(this).closest('.post');
   $clickedPost.find('.comments-container').toggleClass('show');
 });
