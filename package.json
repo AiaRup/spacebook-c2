@@ -1,0 +1,26 @@
+{
+  "name": "spacebook-c2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "3.3.7",
+    "express": "^4.16.3",
+    "jquery": "^3.3.1",
+    "save": "^2.3.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AiaRup/spacebook-c2.git"
+  },
+  "author": "Aia Rupsom",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AiaRup/spacebook-c2/issues"
+  },
+  "homepage": "https://github.com/AiaRup/spacebook-c2#readme"
+}
