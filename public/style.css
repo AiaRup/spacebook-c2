@@ -5,3 +5,7 @@
 .show {
   display: block;
 }
+
+.post {
+  margin: 5px 0;
+}

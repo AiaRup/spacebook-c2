@@ -1,3 +1,4 @@
+var STORAGE_ID = 'spacebook';
 var SpacebookApp = function() {
   var posts = [];
   var currentId = 0; // the current id to assign to a post
@@ -47,6 +48,14 @@ var SpacebookApp = function() {
       $listComments.append('<p class="comment">' + post.comments[i].text +  ' <button type="button" class="btn btn-danger btn-sm remove-comment">Remove Comment</button></p>');
     }
   };
+
+  var _saveToLocalStorage = function () {
+    localStorage.setItem(STORAGE_ID, JSON.stringify(posts));
+  };
+
+  var _getFromLocalStorage = function () {
+    return JSON.parse(localStorage.getItem(STORAGE_ID) || '[]');
+  };
   /*******************************/
 
   /********POST SECTION*******/
@@ -59,6 +68,8 @@ var SpacebookApp = function() {
 
     currentId += 1;
     posts.push(post);
+    // update local-storage
+    _saveToLocalStorage();
     // render posts and render comments
     _renderPosts();
   };
@@ -69,6 +80,8 @@ var SpacebookApp = function() {
     var post = _findPostById(id);
     // delete post from posts array
     posts.splice(posts.indexOf(post), 1);
+    // update local-storage
+    _saveToLocalStorage();
     // delete post from page
     currentPost.remove();
   };
@@ -80,6 +93,8 @@ var SpacebookApp = function() {
     var post = _findPostById(id);
     // add comment to the post array
     post.comments.push({ text: textComment });
+    // update local-storage
+    _saveToLocalStorage();
     // render comments
     _renderComments(currentPost);
   };
@@ -89,6 +104,8 @@ var SpacebookApp = function() {
     var post = _findPostById(id);
     // remove from the comment array of the post property
     post.comments.splice(commentInx, 1);
+    // update local-storage
+    _saveToLocalStorage();
     // remove the comment from the page
     currentComment.remove();
   };
@@ -101,7 +118,9 @@ var SpacebookApp = function() {
   };
 
   // immediately invoke the render post method
+  posts = _getFromLocalStorage();
   _renderPosts();
+  // _renderComments();
 
   return {
     createPost: createPost,
